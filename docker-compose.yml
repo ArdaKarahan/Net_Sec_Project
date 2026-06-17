@@ -24,22 +24,6 @@ services:
     cap_add:
       - NET_ADMIN # Grants the container permission to use network utilities if needed
 
-  node2:
-    build: .
-    container_name: sim_node2
-    networks:
-      blockchain_wan:
-        ipv4_address: 172.20.0.12
-    environment:
-      - NODE_ID=node2
-      - P2P_PORT=8000
-      - BLOCKCHAIN_MODE=traditional
-      - PEERS=172.20.0.11:8000,172.20.0.13:8000
-    ports:
-      - "8002:8080"
-    cap_add:
-      - NET_ADMIN
-
   node1_exporter:
     image: prom/node-exporter:latest
     container_name: sim_node1_exporter
@@ -105,18 +89,19 @@ services:
     depends_on:
       - node3
 
-  node3:
-    build: .
-    container_name: sim_node3
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sim_prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml --web.enable-remote-write-receiver
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
     networks:
       blockchain_wan:
-        ipv4_address: 172.20.0.13
-    environment:
-      - NODE_ID=node3
-      - P2P_PORT=8000
-      - BLOCKCHAIN_MODE=traditional
-      - PEERS=172.20.0.11:8000,172.20.0.12:8000
-    ports:
-      - "8003:8080"
-    cap_add:
-      - NET_ADMIN
+        ipv4_address: 172.20.0.200 # Unique IP for Prometheus
+    depends_on:
+      - node1_exporter
+      - node2_exporter
+      - node3_exporter

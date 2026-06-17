@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s # By default, scrape targets every 15 seconds.
+
+scrape_configs:
+  - job_name: 'node_exporters'
+    static_configs:
+      - targets: ['172.20.0.111:9100'] # node1_exporter
+        labels:
+          instance: 'sim_node1'
+      - targets: ['172.20.0.112:9100'] # node2_exporter
+        labels:
+          instance: 'sim_node2'
+      - targets: ['172.20.0.113:9100'] # node3_exporter
+        labels:
+          instance: 'sim_node3'
