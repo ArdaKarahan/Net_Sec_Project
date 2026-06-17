@@ -40,6 +40,71 @@ services:
     cap_add:
       - NET_ADMIN
 
+  node1_exporter:
+    image: prom/node-exporter:latest
+    container_name: sim_node1_exporter
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.111 # Unique IP for the exporter
+    ports:
+      - "9101:9100" # Map to local host for direct access if needed
+    depends_on:
+      - node1
+
+  node2:
+    build: .
+    container_name: sim_node2
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.12
+    environment:
+      - NODE_ID=node2
+      - P2P_PORT=8000
+      - BLOCKCHAIN_MODE=traditional
+      - PEERS=172.20.0.11:8000,172.20.0.13:8000
+    ports:
+      - "8002:8080"
+    cap_add:
+      - NET_ADMIN
+
+  node2_exporter:
+    image: prom/node-exporter:latest
+    container_name: sim_node2_exporter
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.112 # Unique IP for the exporter
+    ports:
+      - "9102:9100"
+    depends_on:
+      - node2
+
+  node3:
+    build: .
+    container_name: sim_node3
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.13
+    environment:
+      - NODE_ID=node3
+      - P2P_PORT=8000
+      - BLOCKCHAIN_MODE=traditional
+      - PEERS=172.20.0.11:8000,172.20.0.12:8000
+    ports:
+      - "8003:8080"
+    cap_add:
+      - NET_ADMIN
+
+  node3_exporter:
+    image: prom/node-exporter:latest
+    container_name: sim_node3_exporter
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.113 # Unique IP for the exporter
+    ports:
+      - "9103:9100"
+    depends_on:
+      - node3
+
   node3:
     build: .
     container_name: sim_node3
