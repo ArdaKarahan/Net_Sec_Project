@@ -9,3 +9,4 @@ vendor/
 # Docker logs and storage files
 *.log
 .docker-volumes/
+.aider*
