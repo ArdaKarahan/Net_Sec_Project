@@ -10,3 +10,7 @@ vendor/
 *.log
 .docker-volumes/
 .aider*
+
+# Prometheus and Grafana data volumes
+prometheus_data/
+grafana_data/
