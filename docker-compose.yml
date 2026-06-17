@@ -1,0 +1,57 @@
+version: '3.8'
+
+networks:
+  blockchain_wan:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+services:
+  node1:
+    build: .
+    container_name: sim_node1
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.11
+    environment:
+      - NODE_ID=node1
+      - P2P_PORT=8000
+      - BLOCKCHAIN_MODE=traditional  # Options: traditional, pqc_dilithium, pqc_falcon
+      - PEERS=172.20.0.12:8000,172.20.0.13:8000
+    ports:
+      - "8001:8080" # Mapping local port 8001 to Node 1's RPC interface
+    cap_add:
+      - NET_ADMIN # Grants the container permission to use network utilities if needed
+
+  node2:
+    build: .
+    container_name: sim_node2
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.12
+    environment:
+      - NODE_ID=node2
+      - P2P_PORT=8000
+      - BLOCKCHAIN_MODE=traditional
+      - PEERS=172.20.0.11:8000,172.20.0.13:8000
+    ports:
+      - "8002:8080"
+    cap_add:
+      - NET_ADMIN
+
+  node3:
+    build: .
+    container_name: sim_node3
+    networks:
+      blockchain_wan:
+        ipv4_address: 172.20.0.13
+    environment:
+      - NODE_ID=node3
+      - P2P_PORT=8000
+      - BLOCKCHAIN_MODE=traditional
+      - PEERS=172.20.0.11:8000,172.20.0.12:8000
+    ports:
+      - "8003:8080"
+    cap_add:
+      - NET_ADMIN

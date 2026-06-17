@@ -1,0 +1,11 @@
+# Binaries and architectures
+bin/
+blockchain-node
+
+# Development tools & dependencies
+vendor/
+.env
+
+# Docker logs and storage files
+*.log
+.docker-volumes/
