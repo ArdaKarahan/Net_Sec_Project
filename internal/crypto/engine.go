@@ -1,20 +1,18 @@
 package crypto
 
-type Engine interface {
-    Encrypt(data []byte) ([]byte, error)
-    Decrypt(data []byte) ([]byte, error)
-}
+// CryptoEngine handles all cryptographic abstractions for the blockchain node.
+type CryptoEngine interface {
+	// Name returns the identifier of the cryptographic suite
+	Name() string
 
-type TraditionalEngine struct {
-    Key string
-}
+	// --- Key Generation ---
+	GenerateAsymmetricKeys() (pubKey []byte, privKey []byte, err error)
 
-func (e *TraditionalEngine) Encrypt(data []byte) ([]byte, error) {
-    // Placeholder implementation
-    return nil, nil
-}
+	// --- Digital Signatures ---
+	Sign(message []byte, privKey []byte) (signature []byte, err error)
+	Verify(message []byte, signature []byte, pubKey []byte) bool
 
-func (e *TraditionalEngine) Decrypt(data []byte) ([]byte, error) {
-    // Placeholder implementation
-    return nil, nil
+	// --- Key Encapsulation Mechanism (KEM) ---
+	Encapsulate(peerPubKey []byte) (ciphertext []byte, sharedSecret []byte, err error)
+	Decapsulate(ciphertext []byte, privKey []byte) (sharedSecret []byte, err error)
 }
