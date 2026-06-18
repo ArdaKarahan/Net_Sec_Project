@@ -17,7 +17,7 @@ services:
     environment:
       - NODE_ID=node1
       - P2P_PORT=8000
-      - BLOCKCHAIN_MODE=traditional  # Options: traditional, pqc_dilithium, pqc_falcon
+      - BLOCKCHAIN_MODE=pqc_falcon  # Options: traditional, pqc_dilithium, pqc_falcon
       - PEERS=172.20.0.12:8000,172.20.0.13:8000
     ports:
       - "8001:8080" # Mapping local port 8001 to Node 1's RPC interface
