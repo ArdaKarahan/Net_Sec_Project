@@ -161,7 +161,7 @@ log.Printf("[init] waiting 2s for handshakes to settle...")
 time.Sleep(2 * time.Second)
 
 done := make(chan struct{})
-pending := make(chan consensus.Transaction, 256)
+pending := make(chan consensus.Transaction, 4096)
 
 // Transaction generator goroutine
 go func() {

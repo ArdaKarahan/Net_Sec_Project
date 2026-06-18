@@ -2,6 +2,11 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from io import StringIO
+
+# Force a clean headless backend to prevent Tkinter window errors
+import matplotlib
+matplotlib.use('Agg')
 
 # Set a clean, professional plotting style
 sns.set_theme(style="whitegrid")
@@ -33,7 +38,6 @@ def load_and_clean_csv(file_path):
             clean_lines.append(line_str)
             
     # Parse the clean lines into a DataFrame
-    from io import StringIO
     df = pd.read_csv(StringIO("\n".join(clean_lines)))
     
     # Convert timestamps to numeric elapsed time seconds for uniform plotting curves
@@ -41,12 +45,21 @@ def load_and_clean_csv(file_path):
     return df
 
 # ---------------------------------------------------------------------------
-# 1. Load Datasets
+# 1. Load Datasets & Establish Perfect Synchronization Maps
 # ---------------------------------------------------------------------------
 data_map = {
-    "Traditional (Classical)": "metrics_traditional.csv",
-    "PQC Dilithium": "metrics_dilithium.csv",
-    "PQC Falcon": "metrics_falcon.csv"
+    "Traditional Baseline": "metrics_traditional.csv",
+    "Dilithium (Chaos Base)": "metrics_dilithium.csv",
+    "Dilithium (Optimized)": "metrics_dilithium_optimized.csv",
+    "Falcon (Optimized)": "metrics_falcon_optimized.csv"
+}
+
+# The colors map dictionary keys match data_map keys 100% identically now
+colors = {
+    "Traditional Baseline": "#2ecc71",      # Crisp Green
+    "Dilithium (Chaos Base)": "#e74c3c",    # Warning Red
+    "Dilithium (Optimized)": "#9b59b6",     # Royal Purple
+    "Falcon (Optimized)": "#3498db"          # Sky Blue
 }
 
 dfs = {}
@@ -65,18 +78,17 @@ if not dfs:
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
 fig.suptitle("Computational Resource Saturation Comparison", weight="bold", y=0.98)
 
-colors = {"Traditional (Classical)": "#2ecc71", "PQC Dilithium": "#e74c3c", "PQC Falcon": "#3498db"}
-
 for mode_name, df in dfs.items():
     # Apply a gentle rolling average to smooth out background Docker host engine jitter
     smooth_cpu = df["cpu_percent"].rolling(window=3, min_periods=1).mean()
+    
     ax1.plot(df["Elapsed_Seconds"], smooth_cpu, label=mode_name, color=colors[mode_name], linewidth=2.5)
     ax2.plot(df["Elapsed_Seconds"], df["memory_mb"], label=mode_name, color=colors[mode_name], linewidth=2.5)
 
 ax1.set_title("CPU Utilization Profiles")
 ax1.set_xlabel("Elapsed Time (Seconds)")
 ax1.set_ylabel("CPU Utilization (%)")
-ax1.set_ylim(0, 105)
+ax1.set_ylim(-5, 105)
 ax1.legend(loc="upper right")
 
 ax2.set_title("Process Memory Footprint Trends")
@@ -95,15 +107,15 @@ plt.figure(figsize=(10, 6))
 plt.title("Network Throughput Constraints under Bounded Queues", weight="bold", pad=15)
 
 for mode_name, df in dfs.items():
-    # Convert absolute bytes to Megabytes per second for immediate clarity
-    mb_sent = df["net_bytes_sent"] / (1024 * 1024)
-    smooth_net = mb_sent.rolling(window=3, min_periods=1).mean()
+    # Convert total accumulated bytes into total Megabytes received over time
+    mb_recv = df["net_bytes_recv"] / (1024 * 1024)
+    smooth_net = mb_recv.rolling(window=3, min_periods=1).mean()
+    
     plt.plot(df["Elapsed_Seconds"], smooth_net, label=mode_name, color=colors[mode_name], linewidth=2.5)
 
 plt.xlabel("Elapsed Time (Seconds)")
-plt.ylabel("Data Transmitted (MB / Sec)")
-plt.yscale("linear")  # Change to "log" if PQC data variance spans multiple orders of magnitude
-plt.legend(loc="upper right")
+plt.ylabel("Cumulative Data Received (MB)")
+plt.legend(loc="upper left")
 
 plt.tight_layout()
 plt.savefig("pqc_network_bandwidth.png", dpi=300)

@@ -162,7 +162,7 @@ func NewPeerServer(
 		kemPubKey:    kemPub,
 		kemPrivKey:   kemPriv,
 		peers:        make(map[string]*Peer),
-		InboundTx:    make(chan consensus.Transaction, 256),
+		InboundTx:    make(chan consensus.Transaction, 4096),
 		InboundBlock: make(chan consensus.Block, 64),
 		quit:         make(chan struct{}),
 	}, nil

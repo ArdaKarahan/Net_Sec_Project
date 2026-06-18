@@ -44,7 +44,7 @@ services:
     environment:
       - NODE_ID=node2
       - P2P_PORT=8000
-      - BLOCKCHAIN_MODE=traditional
+      - BLOCKCHAIN_MODE=pqc_falcon
       - PEERS=172.20.0.11:8000,172.20.0.13:8000
     ports:
       - "8002:8080"
@@ -71,7 +71,7 @@ services:
     environment:
       - NODE_ID=node3
       - P2P_PORT=8000
-      - BLOCKCHAIN_MODE=traditional
+      - BLOCKCHAIN_MODE=pqc_falcon
       - PEERS=172.20.0.11:8000,172.20.0.12:8000
     ports:
       - "8003:8080"
